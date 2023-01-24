@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { ChangeEvent, FormEvent, InvalidEvent, useState } from 'react';
 
 import { format, formatDistanceToNow } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
@@ -8,7 +8,24 @@ import { Avatar } from './Avatar';
 
 import styles from './Post.module.css';
 
-export function Post({ author, content, publishedAt }) {
+interface IAuthor {
+  name: string;
+  role: string;
+  avatarUrl: string;
+}
+
+interface IContent {
+  type: 'link' | 'paragraph';
+  content: string;
+}
+
+interface IPost {
+  author: IAuthor;
+  content: IContent[];
+  publishedAt: number | Date;
+}
+
+export function Post({ author, content, publishedAt }: IPost) {
   const [comments, setComments] = useState(['Post show de bola']);
   const [newComment, setNewComment] = useState('');
 
@@ -25,19 +42,19 @@ export function Post({ author, content, publishedAt }) {
     addSuffix: true,
   });
 
-  function handleCreateNewComments(event) {
+  function handleCreateNewComments(event: FormEvent) {
     event.preventDefault();
 
     setComments([...comments, newComment]);
     setNewComment('');
   }
 
-  function handleNewCommentChange(event) {
+  function handleNewCommentChange(event: ChangeEvent<HTMLTextAreaElement>) {
     event.target.setCustomValidity('');
     setNewComment(event.target.value);
   }
 
-  function handleNewCommentInvalid(event) {
+  function handleNewCommentInvalid(event: InvalidEvent<HTMLTextAreaElement>) {
     console.log(event);
     event.target.setCustomValidity('Este campo é obrigatório');
   }
@@ -46,7 +63,7 @@ export function Post({ author, content, publishedAt }) {
     return newComment.length === 0;
   }
 
-  function deleteComments(commentToDelete) {
+  function deleteComments(commentToDelete: string) {
     const commentsWithoutDeletedOne = comments.filter(
       (comment) => comment !== commentToDelete,
     );
@@ -66,7 +83,7 @@ export function Post({ author, content, publishedAt }) {
 
         <time
           title={publishedDateFormatted}
-          dateTime={publishedAt.toISOString()}
+          dateTime={publishedAt.toString()}
         >
           {publishedDateRelativeNow}
         </time>
